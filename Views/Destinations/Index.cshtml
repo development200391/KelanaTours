@@ -1,0 +1,28 @@
+@model List<(Destination Destination, int TourCount)>
+@inject SiteOptions Site
+@{
+    ViewData["Title"] = "Tour Destinations";
+    var head = new PageHeadModel("Tour Destinations", "Discover Amazing Places to Visit",
+        "page/title--image-0412202516504354.png", [("Home", "/"), ("Tour Destinations", null)]);
+}
+<partial name="_PageHead" model="head" />
+
+<section class="container py-section">
+    <h2 class="section-title mb-4">Explore Our Destinations</h2>
+    <div class="row g-4 justify-content-center">
+        @foreach (var (d, count) in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <a href="/destinations/@d.Slug" class="destination-figure">
+                    <img src="@Site.Webp(d.Image)" alt="@d.Name" loading="lazy" />
+                    <span class="caption">
+                        <span class="badge-count">@count Our Services</span>
+                        <span class="name">@d.Name</span>
+                    </span>
+                </a>
+            </div>
+        }
+    </div>
+</section>
+
+<partial name="_CtaBanner" />

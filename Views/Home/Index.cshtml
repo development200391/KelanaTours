@@ -1,0 +1,133 @@
+﻿@model HomeViewModel
+@inject SiteOptions Site
+@{
+    // Judul tab beranda diatur di _Layout (tanpa ViewData["Title"]).
+}
+
+<!-- Hero slider (4 slide, efek fade + zoom, nomor slide di kanan) -->
+<section class="home-slider">
+    <div class="swiper slider-home">
+        <div class="swiper-wrapper">
+            @foreach (var s in Model.Slides)
+            {
+                <div class="swiper-slide">
+                    <div class="slider-home-item">
+                        <div class="background animate-zoom">
+                            <img src="@Site.Webp(s.Image)" alt="@s.Title" />
+                        </div>
+                        <div class="container position-relative h-100 d-flex align-items-center">
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <span class="sup-title">@s.SupTitle</span>
+                                    <h2 class="title">@s.Title</h2>
+                                    <p class="description">@s.Description</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+</section>
+
+<!-- Why Travelers Choose -->
+<section class="wrapper">
+    <div class="container py-section">
+        <h2 class="section-title">Why Travelers Choose Epic Escapes Indonesia</h2>
+        <div class="swiper layanan-swiper mt-4">
+            <div class="swiper-wrapper">
+                @foreach (var f in Model.Features)
+                {
+                    <div class="swiper-slide h-auto">
+                        <div class="layanan-item">
+                            <img src="@Site.Webp(f.Icon)" class="img-icon" alt="" />
+                            <h5 class="title">@f.Title</h5>
+                            <p>@f.Text</p>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="swiper-scrollbar"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Signature Adventures -->
+<section class="wrapper bg-gray">
+    <div class="container py-section">
+        <h2 class="section-title">Signature Adventures Curated for Your Perfect Indonesian Journey</h2>
+        <div class="tourSwiperWrapper position-relative mt-4">
+            <div class="swiper tour-swiper">
+                <div class="swiper-wrapper">
+                    @foreach (var card in Model.Tours)
+                    {
+                        <div class="swiper-slide h-auto"><partial name="_TourCard" model="card" /></div>
+                    }
+                </div>
+            </div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+        </div>
+    </div>
+</section>
+
+<!-- What Our Travelers Say -->
+<section class="wrapper bg-light-soft">
+    <div class="container py-section">
+        <div class="row gx-xl-5 gy-5">
+            <div class="col-xl-4">
+                <div class="d-flex align-items-center">
+                    <a href="@Site.TripAdvisor" target="_blank" rel="noopener" class="d-flex align-items-center">
+                        <img src="@Site.Img("trip-advisor-icon.svg")" class="pe-2" style="height: 40px; width: auto;" alt="Tripadvisor" />
+                    </a>
+                    <img src="@Site.Img("trip-advisor-star-full.svg")" style="height: 20px; width: auto;" alt="5 stars" />
+                </div>
+                <h2 class="display-title mt-3 mb-3">What Our Travelers Say</h2>
+                <p class="lead-text">Discover how Epic Escapes Indonesia creates unforgettable journeys through honest reviews and memorable experiences shared by our guests.</p>
+            </div>
+            <div class="col-xl-8">
+                <div class="swiper review-swiper">
+                    <div class="swiper-wrapper">
+                        @foreach (var r in Model.Reviews)
+                        {
+                            <div class="swiper-slide h-auto">
+                                <div class="review-card">
+                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                        <a href="@r.Url" target="_blank" rel="noopener" class="d-flex align-items-center text-dark small">
+                                            <img src="@Site.Img("trip-advisor-icon.svg")" class="pe-2" style="height: 34px; width: auto;" alt="Tripadvisor" />
+                                            See Details
+                                        </a>
+                                        <img src="@Site.Img("trip-advisor-star-full.svg")" style="height: 18px; width: auto;" alt="5 stars" />
+                                    </div>
+                                    <p class="review-text" data-review>@r.Text</p>
+                                    <button type="button" class="review-more" data-review-toggle hidden>Read more</button>
+                                    <div class="review-author">
+                                        @if (r.Avatar is not null)
+                                        {
+                                            <img src="@Site.Webp(r.Avatar)" class="avatar" alt="@r.Name" loading="lazy" />
+                                        }
+                                        else
+                                        {
+                                            <span class="avatar">@r.Name[0]</span>
+                                        }
+                                        <div>
+                                            <strong class="notranslate">@r.Name</strong>
+                                            <small>Tripadvisor review</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<partial name="_CtaBanner" />

@@ -1,0 +1,37 @@
+@model TourCardViewModel
+@inject SiteOptions Site
+@{
+    var t = Model.Tour;
+}
+<div class="tour-card" data-tour-slug="@t.Slug">
+    <div class="thumbnail">
+        <a href="/tours/@t.Slug" aria-label="@t.Title">
+            <img src="@Site.Webp(t.Image)" alt="@t.Title" title="@t.Title" loading="lazy" />
+        </a>
+        <button type="button" class="item-like" data-wishlist-toggle="@t.Slug" aria-pressed="false"
+                aria-label="Add @t.Title to wishlist" title="Add to wishlist">
+            <i class="fa-solid fa-heart"></i>
+        </button>
+    </div>
+    <div class="description">
+        <a href="/our-tours/category/@Model.Category.Slug" class="category">@Model.Category.Name</a>
+        <h3 class="mb-1"><a href="/tours/@t.Slug">@t.Title</a></h3>
+        <div class="meta">
+            <span>@t.Duration</span>
+            <span>•</span>
+            <span><a href="/destinations/@Model.Destination.Slug">@Model.Destination.Name</a></span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-auto gap-2">
+            <div class="stars-wrapper">
+                <div class="stars">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                </div>
+            </div>
+            <div class="price-wrapper">
+                <span class="price notranslate">@Format.Idr(t.PricePerPerson)</span>
+                <span>per person</span>
+            </div>
+        </div>
+    </div>
+    <a href="/tours/@t.Slug" class="btn btn-dark rounded btn-send">See tour details<i class="uil uil-arrow-up-right ms-2"></i></a>
+</div>

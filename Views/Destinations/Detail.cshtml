@@ -1,0 +1,20 @@
+@model DestinationDetailViewModel
+@{
+    var d = Model.Destination;
+    ViewData["Title"] = $"Tours in {d.Name}";
+    var head = new PageHeadModel(d.Name, "Tour Destination", d.Image,
+        [("Home", "/"), ("Tour Destinations", "/destinations"), (d.Name, null)]);
+}
+<partial name="_PageHead" model="head" />
+
+<section class="container py-section">
+    <h2 class="section-title mb-4">Our Services in @d.Name</h2>
+    <div class="row g-4">
+        @foreach (var card in Model.Tours)
+        {
+            <div class="col-sm-6 col-lg-3"><partial name="_TourCard" model="card" /></div>
+        }
+    </div>
+</section>
+
+<partial name="_CtaBanner" />

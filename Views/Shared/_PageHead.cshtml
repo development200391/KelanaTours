@@ -1,0 +1,27 @@
+@model PageHeadModel
+@inject SiteOptions Site
+<section class="page-hero">
+    <div class="page-hero-bg animate-zoom" aria-hidden="true"><img src="@Site.Webp(Model.Image)" alt="" /></div>
+    <div class="container position-relative">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                @foreach (var (text, url) in Model.Crumbs)
+                {
+                    if (url is null)
+                    {
+                        <li class="breadcrumb-item active" aria-current="page">@text</li>
+                    }
+                    else
+                    {
+                        <li class="breadcrumb-item"><a href="@url">@text</a></li>
+                    }
+                }
+            </ol>
+        </nav>
+        @if (Model.SupTitle is not null)
+        {
+            <span class="sup-title">@Model.SupTitle</span>
+        }
+        <h1>@Model.Title</h1>
+    </div>
+</section>

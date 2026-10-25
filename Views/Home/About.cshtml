@@ -1,0 +1,43 @@
+@model IReadOnlyList<Feature>
+@inject SiteOptions Site
+@{
+    ViewData["Title"] = "About Us";
+    var head = new PageHeadModel("About Us", "Get to Know Epic Escapes Indonesia",
+        "page/title--image-0412202512170459.png", [("Home", "/"), ("About Us", null)]);
+}
+<partial name="_PageHead" model="head" />
+
+<section class="container py-section">
+    <div class="row g-5 align-items-center">
+        <div class="col-lg-6 order-lg-2">
+            <div class="about-photo"><img src="@Site.Webp("page/text--image-0412202512231019.png")" alt="Epic Escapes Indonesia" loading="lazy" /></div>
+        </div>
+        <div class="col-lg-6">
+            <span class="section-sup-title mb-3">Welcome to Epic Escapes</span>
+            <h2 class="display-title mb-4">Your Trusted Companion for Authentic Indonesian Adventures</h2>
+            <p>Epic Escapes Indonesia was created with one mission to help travelers experience the true beauty, culture, and adventure of Java. From the magical Blue Fire Ijen phenomena to the spiritual majesty of Borobudur, we craft journeys that go beyond sightseeing and bring you closer to the heart of Indonesia.</p>
+            <p>As a locally based travel agency, we take pride in offering reliable service, friendly guides, and well-curated travel programs designed for comfort, safety, and memorable moments. Whether you're joining a day tour or exploring multiple cities, we’re here to make every step of your adventure smooth, meaningful, and unforgettable.</p>
+            <a href="/destinations" class="btn btn-primary rounded btn-icon mt-2"><i class="uil uil-compass"></i> See our tour destination</a>
+        </div>
+    </div>
+</section>
+
+<section class="wrapper bg-gray">
+    <div class="container py-section">
+        <h2 class="section-title mb-4">Why Travelers Choose Epic Escapes Indonesia</h2>
+        <div class="row g-4">
+            @foreach (var f in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="layanan-item">
+                        <img src="@Site.Webp(f.Icon)" class="img-icon" alt="" />
+                        <h5 class="title">@f.Title</h5>
+                        <p>@f.Text</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<partial name="_CtaBanner" />

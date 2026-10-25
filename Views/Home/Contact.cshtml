@@ -1,0 +1,69 @@
+@model ContactFormModel
+@inject SiteOptions Site
+@{
+    ViewData["Title"] = "Contact";
+    var tours = (IEnumerable<Tour>)ViewBag.Tours;
+    var head = new PageHeadModel("Contact", "Let’s Connect & Start Your Journey",
+        "page/title--image-0512202511140249.png", [("Home", "/"), ("Contact", null)]);
+}
+<partial name="_PageHead" model="head" />
+
+<section class="container py-section">
+    <div class="row g-5">
+        <div class="col-lg-7">
+            <h2 class="display-title mb-2">Let's Talk!</h2>
+            <p class="lead-text mb-4">Have a question about our tours or want a custom itinerary? Fill in the form below and continue the conversation with us on WhatsApp.</p>
+            <form method="post" asp-action="Contact" class="contact-form" novalidate>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" autocomplete="name" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" autocomplete="email" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Phone" class="form-label"></label>
+                        <input asp-for="Phone" class="form-control" autocomplete="tel" />
+                        <span asp-validation-for="Phone" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="TourSlug" class="form-label"></label>
+                        <select asp-for="TourSlug" class="form-select"
+                                asp-items="@(new SelectList(tours, nameof(Tour.Slug), nameof(Tour.Title)))">
+                            <option value="">— General question —</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Message" class="form-label"></label>
+                        <textarea asp-for="Message" class="form-control" rows="5" placeholder="Example: We are 4 people and would like to join the Ijen Blue Fire tour on 12 December."></textarea>
+                        <span asp-validation-for="Message" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary rounded btn-icon px-4"><i class="uil uil-whatsapp"></i> Send via WhatsApp</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-5">
+            <div class="contact-card">
+                <ul class="contact-list">
+                    <li><i class="uil uil-map-marker"></i><div><span>Address</span><strong><a href="@Site.MapUrl" target="_blank" rel="noopener">@Site.Address</a></strong></div></li>
+                    <li><i class="uil uil-phone-alt"></i><div><span>Phone</span><strong class="notranslate">Whatsapp : <a href="@Site.WhatsAppUrl()" target="_blank" rel="noopener">@Site.PhoneDisplay</a><br />Phone : <a href="@Site.PhoneUrl">@Site.PhoneDisplay</a></strong></div></li>
+                    <li><i class="uil uil-envelope"></i><div><span>E-mail</span><strong class="notranslate"><a href="mailto:@Site.Email">@Site.Email</a></strong></div></li>
+                </ul>
+                <a href="@Site.WhatsAppUrl()" target="_blank" rel="noopener" class="btn btn-whatsapp w-100 btn-icon mt-2">
+                    <i class="uil uil-whatsapp"></i> Chat on WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

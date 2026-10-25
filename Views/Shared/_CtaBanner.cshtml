@@ -1,0 +1,20 @@
+@inject SiteOptions Site
+<section class="cta-section">
+    <div class="cta-bg" aria-hidden="true">
+        <img src="@Site.Webp("page/title--image-cta-0412202511113844.png")" alt="" loading="lazy" />
+    </div>
+    <div class="cta-overlay" aria-hidden="true"></div>
+    <div class="container position-relative py-section">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8 text-center">
+                <p class="cta-sup"><small>Contact us for more information</small></p>
+                <h2 class="cta-title">Start Your Adventure Today</h2>
+                <p class="cta-text">Ready to explore Indonesia’s most iconic destinations? Book your journey now and let Epic Escapes Indonesia guide you through unforgettable experiences crafted with comfort, safety, and professional care.</p>
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                    <a href="@Site.WhatsAppUrl()" target="_blank" rel="noopener" class="btn btn-primary rounded btn-icon"><i class="uil uil-whatsapp"></i> Contact us</a>
+                    <a href="/destinations" class="btn btn-light rounded btn-icon"><i class="uil uil-compass"></i> See Tour Destination</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

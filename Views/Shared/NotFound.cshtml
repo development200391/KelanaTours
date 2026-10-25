@@ -1,0 +1,13 @@
+@inject SiteOptions Site
+@{
+    var code = ViewBag.Code as int? ?? 404;
+    ViewData["Title"] = code == 404 ? "Page not found" : $"Error {code}";
+}
+<section class="container py-5 text-center">
+    <div class="notfound-photo mx-auto mb-4"><img src="@Site.Webp("slider/witness-the-magic-of-nature-0212202516385335.png")" alt="" /></div>
+    <span class="section-sup-title mx-auto mb-2">Error @code</span>
+    <h1 class="display-6 fw-bold">@(code == 404 ? "Looks like you are lost" : "Something went wrong")</h1>
+    <p class="text-secondary mb-4">@(code == 404 ? "The page you are looking for does not exist or has been moved." : "Please try again in a moment.")</p>
+    <a href="/" class="btn btn-primary rounded">Back to home</a>
+    <a href="/our-tours" class="btn btn-outline-primary rounded ms-2">See all tours</a>
+</section>

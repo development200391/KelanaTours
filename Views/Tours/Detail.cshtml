@@ -1,0 +1,185 @@
+@model TourDetailViewModel
+@inject SiteOptions Site
+@{
+    var t = Model.Tour;
+    ViewData["Title"] = t.Title;
+    ViewData["Description"] = System.Text.RegularExpressions.Regex.Replace(t.SummaryHtml, "<[^>]+>", "").Trim();
+    var tourUrl = $"{Context.Request.Scheme}://{Context.Request.Host}/tours/{t.Slug}";
+    var gallery = t.Gallery.Take(3).ToList();
+    var sections = new List<(string Title, string Html, bool Collapsible)>
+    {
+        ("Itinerary", t.ItineraryHtml, true),
+        ("Highlights", t.HighlightsHtml, false),
+        ("Full description", t.DescriptionHtml, true),
+    };
+}
+
+<!-- Banner -->
+<section class="hero-section-custom">
+    <div class="background-image animate-zoom" aria-hidden="true"><img src="@Site.Webp(t.Image)" alt="" /></div>
+    <div class="container position-relative">
+        <p class="title">@t.Title</p>
+    </div>
+</section>
+
+<section class="container py-4 tour-details">
+    <div class="tour-details-header">
+        <h1 class="text-blue-gradient-x">@t.Title</h1>
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-2 mb-3">
+            <div class="review-info-wrapper">
+                <span class="badge bg-primary-gradient-x">Recommended Tour</span>
+                <span class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></span>
+                <div class="header-meta">
+                    <i class="fa-solid fa-tag"></i>
+                    <div><p class="title">Category</p><p class="value"><a href="/our-tours/category/@Model.Category.Slug">@Model.Category.Name</a></p></div>
+                </div>
+                <div class="header-meta">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <div><p class="title">Destination</p><p class="value"><a href="/destinations/@Model.Destination.Slug">@Model.Destination.Name</a></p></div>
+                </div>
+            </div>
+            <div class="action-wrapper">
+                <button type="button" class="link-button" data-share data-share-url="@tourUrl" data-share-title="@t.Title">
+                    <i class="fa-solid fa-arrow-up-right-from-square me-2"></i>Share this tour
+                </button>
+                <button type="button" class="link-button" data-wishlist-toggle="@t.Slug" aria-pressed="false">
+                    <span data-label-off><i class="uil uil-heart me-1"></i>Add to wishlist</span><span data-label-on hidden><i class="fa-solid fa-heart me-1 text-danger"></i>Saved to wishlist</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Galeri: 1 foto besar + 3 foto kecil -->
+    <div class="tour-gallery count-@(gallery.Count + 1)">
+        <a href="@Site.Webp(t.Image)" target="_blank" rel="noopener" class="g-main"><img src="@Site.Webp(t.Image)" alt="@t.Title" /></a>
+        @for (var i = 0; i < gallery.Count; i++)
+        {
+            <a href="@Site.Webp(gallery[i])" target="_blank" rel="noopener" class="g-item g-@(i + 1)"><img src="@Site.Webp(gallery[i])" alt="@t.Title photo @(i + 2)" loading="lazy" /></a>
+        }
+    </div>
+
+    <div class="row gx-lg-5 mt-4 align-items-start">
+        <div class="col-lg-8 mb-4">
+            <div class="tour-summary">@Html.Raw(t.SummaryHtml)</div>
+
+            @foreach (var (title, html, collapsible) in sections)
+            {
+                if (string.IsNullOrWhiteSpace(html)) { continue; }
+                <hr class="my-5" />
+                <div class="row detail-row">
+                    <div class="col-lg-4"><h2 class="h4">@title</h2></div>
+                    <div class="col-lg-8">
+                        <div class="rich-text @(collapsible ? "is-collapsible" : "")" data-collapsible="@collapsible.ToString().ToLowerInvariant()">@Html.Raw(html)</div>
+                        @if (collapsible)
+                        {
+                            <button type="button" class="read-more" data-read-more hidden>Read more <i class="uil uil-angle-down"></i></button>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (t.Included.Count > 0)
+            {
+                <hr class="my-5" />
+                <div class="row detail-row">
+                    <div class="col-lg-4"><h2 class="h4">Included</h2></div>
+                    <div class="col-lg-8">
+                        <ul class="check-list">
+                            @foreach (var item in t.Included)
+                            {
+                                <li><i class="fas fa-check text-success"></i>@item</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+
+            @if (t.NotIncluded.Count > 0)
+            {
+                <hr class="my-5" />
+                <div class="row detail-row">
+                    <div class="col-lg-4"><h2 class="h4">Not Included</h2></div>
+                    <div class="col-lg-8">
+                        <ul class="check-list">
+                            @foreach (var item in t.NotIncluded)
+                            {
+                                <li><i class="fas fa-xmark text-danger"></i>@item</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(t.ImportantHtml))
+            {
+                <hr class="my-5" />
+                <div class="row detail-row">
+                    <div class="col-lg-4"><h2 class="h4">Important information</h2></div>
+                    <div class="col-lg-8"><div class="rich-text important-info">@Html.Raw(t.ImportantHtml)</div></div>
+                </div>
+            }
+        </div>
+
+        <aside class="col-lg-4">
+            <div class="start-form-wrapper sticky-lg-top">
+                <div class="d-flex gap-3 align-items-start mb-3">
+                    <p class="mb-0 text-dark fw-600">Start From:</p>
+                    <div>
+                        <p class="mb-0 h4 text-dark notranslate">@Format.Idr(t.PricePerPerson)</p>
+                        <p class="mb-0 small">per person</p>
+                    </div>
+                </div>
+                <div class="d-flex flex-column gap-2 mb-4">
+                    <label class="form-label mb-0" for="tourDateInput">Tour date</label>
+                    <input class="form-control" type="date" id="tourDateInput" data-tour-date />
+                    <small class="text-danger" data-date-error hidden>Please select a tour date first.</small>
+                    <button type="button" class="btn btn-outline-primary fw-bold w-100"
+                            data-book-whatsapp data-wa="@Site.WhatsAppNumber" data-tour-title="@t.Title" data-tour-link="@tourUrl">
+                        Book via Whatsapp<i class="uil uil-whatsapp ms-1"></i>
+                    </button>
+                </div>
+                <hr class="my-2" />
+                <h4 class="h5 mt-3 mb-3">About This Activity</h4>
+                <div class="about-activity">
+                    <div class="item"><img src="@Site.Img("time.png")" alt="" /><div><p class="fw-bold">Duration</p><p>@t.Duration</p></div></div>
+                    @if (!string.IsNullOrWhiteSpace(t.GuideLanguages))
+                    {
+                        <div class="item"><img src="@Site.Img("tour-guide.png")" alt="" /><div><p class="fw-bold">Tour Guide</p><p>@t.GuideLanguages</p></div></div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(t.Cancellation))
+                    {
+                        <div class="item"><img src="@Site.Img("money-back.png")" alt="" /><div><p class="fw-bold">Free cancellation</p><p>@t.Cancellation</p></div></div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(t.Reserve))
+                    {
+                        <div class="item"><img src="@Site.Img("suitcase.png")" alt="" /><div><p class="fw-bold">Reserve now &amp; pay later</p><p>@t.Reserve</p></div></div>
+                    }
+                    <div class="item"><img src="@Site.Img("suitcase.png")" alt="" /><div><p class="fw-bold">Pickup included</p>@if (!string.IsNullOrWhiteSpace(t.Pickup)) { <p>@t.Pickup</p> }</div></div>
+                </div>
+            </div>
+        </aside>
+    </div>
+</section>
+
+@if (Model.RelatedTours.Count > 0)
+{
+    <section class="wrapper bg-gray">
+        <div class="container py-section">
+            <h2 class="section-title">You might also like...</h2>
+            <div class="tourSwiperWrapper position-relative mt-4">
+                <div class="swiper tour-swiper">
+                    <div class="swiper-wrapper">
+                        @foreach (var card in Model.RelatedTours)
+                        {
+                            <div class="swiper-slide h-auto"><partial name="_TourCard" model="card" /></div>
+                        }
+                    </div>
+                </div>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+            </div>
+        </div>
+    </section>
+}
+
+<partial name="_CtaBanner" />

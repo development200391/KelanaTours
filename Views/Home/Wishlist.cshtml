@@ -1,0 +1,23 @@
+@model IReadOnlyList<TourCardViewModel>
+@{
+    ViewData["Title"] = "Wishlist";
+    var head = new PageHeadModel("Wishlist", "Your Saved Adventures",
+        "page/-0512202515104349.png", [("Home", "/"), ("Wishlist", null)]);
+}
+<partial name="_PageHead" model="head" />
+
+<section class="container py-section">
+    <div class="empty-state text-center" data-wishlist-empty hidden>
+        <h2 class="h4">Your wishlist is empty</h2>
+        <p class="text-secondary">Tap the heart icon on any tour to save it here.</p>
+        <a href="/our-tours" class="btn btn-primary rounded">Explore tours</a>
+    </div>
+    <div class="row g-4">
+        @foreach (var card in Model)
+        {
+            <div class="col-sm-6 col-lg-3" data-wishlist-item="@card.Tour.Slug" hidden>
+                <partial name="_TourCard" model="card" />
+            </div>
+        }
+    </div>
+</section>

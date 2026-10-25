@@ -1,0 +1,74 @@
+@model TourListViewModel
+@inject ITourRepository Repo
+@{
+    ViewData["Title"] = Model.Title;
+    string PageUrl(int p)
+    {
+        var parts = new List<string>();
+        if (!string.IsNullOrWhiteSpace(Model.Query)) parts.Add("keyword=" + Uri.EscapeDataString(Model.Query));
+        if (p > 1) parts.Add("page=" + p);
+        return parts.Count == 0 ? Model.BasePath : Model.BasePath + "?" + string.Join("&", parts);
+    }
+    var crumbs = new List<(string Text, string? Url)> { ("Home", "/") };
+    if (Model.Category is not null) crumbs.Add(("Our Services", "/our-tours"));
+    crumbs.Add((Model.Title, null));
+    var head = new PageHeadModel(Model.Title, Model.SupTitle, Model.HeroImage, crumbs);
+}
+<partial name="_PageHead" model="head" />
+
+<section class="container py-section">
+    <div class="filter-bar">
+        <a href="/our-tours" class="chip @(Model.BasePath == "/our-tours" ? "active" : "")">All Tours</a>
+        @foreach (var c in Repo.Categories)
+        {
+            <a href="/our-tours/category/@c.Slug" class="chip @(Model.Category?.Slug == c.Slug ? "active" : "")">@c.Name</a>
+        }
+    </div>
+
+    @if (Model.Category is not null)
+    {
+        <h2 class="section-title mb-4">Our Services - @Model.Category.Name</h2>
+    }
+    else
+    {
+        <p class="result-count">@Model.TotalCount tour(s) found</p>
+    }
+
+    @if (Model.TotalCount == 0)
+    {
+        <div class="empty-state text-center">
+            <h2 class="h4">No tours found</h2>
+            <p class="text-secondary">Try another keyword, for example “Ijen”, “Bromo”, or “Borobudur”.</p>
+            <a href="/our-tours" class="btn btn-primary rounded">See all tours</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var card in Model.Tours)
+            {
+                <div class="col-sm-6 col-lg-3"><partial name="_TourCard" model="card" /></div>
+            }
+        </div>
+
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="d-flex justify-content-center mt-5" aria-label="Pagination">
+                <ul class="pagination">
+                    <li class="page-item @(Model.Page <= 1 ? "disabled" : "")">
+                        <a class="page-link" href="@PageUrl(Model.Page - 1)" aria-label="Previous">&laquo;</a>
+                    </li>
+                    @for (var p = 1; p <= Model.TotalPages; p++)
+                    {
+                        <li class="page-item @(p == Model.Page ? "active" : "")"><a class="page-link" href="@PageUrl(p)">@p</a></li>
+                    }
+                    <li class="page-item @(Model.Page >= Model.TotalPages ? "disabled" : "")">
+                        <a class="page-link" href="@PageUrl(Model.Page + 1)" aria-label="Next">&raquo;</a>
+                    </li>
+                </ul>
+            </nav>
+        }
+    }
+</section>
+
+<partial name="_CtaBanner" />

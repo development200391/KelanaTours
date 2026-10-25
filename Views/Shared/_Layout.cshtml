@@ -1,0 +1,211 @@
+﻿@inject ITourRepository Repo
+@inject SiteOptions Site
+@{
+    var currentPath = Context.Request.Path.Value ?? "/";
+    string Active(string prefix) =>
+        (prefix == "/" ? currentPath == "/" : currentPath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) ? "active" : "";
+    var langs = new (string Code, string Flag, string Name)[]
+    {
+        ("en", "gb", "English"), ("fr", "fr", "French"), ("it", "it", "Italian"), ("es", "es", "Spanish"),
+        ("de", "de", "German"), ("nl", "nl", "Dutch"), ("zh-CN", "cn", "Chinese"),
+    };
+    var pageTitle = ViewData["Title"] is string t ? $"{t} – {Site.BrandName}" : $"{Site.BrandFullName} – Blue Fire Ijen Tours & Yogyakarta Travel";
+    var description = ViewData["Description"] as string
+        ?? "Explore Blue Fire Ijen, Borobudur, Yogyakarta, and Bali with Epic Escapes Indonesia. Premium tours, expert guides, curated experiences, and trusted travel service.";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@pageTitle</title>
+    <meta name="description" content="@description" />
+    <meta property="og:title" content="@pageTitle" />
+    <meta property="og:description" content="@description" />
+    <link rel="icon" type="image/png" href="@Site.Img("favicon-96x96.png")" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="@Site.Img("favicon.svg")" />
+    <link rel="apple-touch-icon" sizes="180x180" href="@Site.Img("apple-touch-icon.png")" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/unicons/css/line.css" />
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/lib/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- Top bar biru -->
+    <div class="topbar">
+        <div class="container d-flex align-items-center gap-3">
+            <div class="d-none d-md-flex align-items-center">
+                <i class="uil uil-globe me-2"></i>Explore Indonesia’s Beauty with @Site.BrandFullName
+            </div>
+            <div class="top-contact d-flex align-items-center gap-3 ms-auto">
+                <a href="@Site.PhoneUrl" class="topbar-link notranslate"><i class="uil uil-phone me-2"></i>@Site.PhoneDisplay</a>
+                <div class="flag-wrap d-flex gap-2 align-items-center notranslate">
+                    @foreach (var l in langs)
+                    {
+                        <img src="/lib/flags/@(l.Flag).svg" class="flag-icon" alt="@l.Name" title="@l.Name" data-lang="@l.Code" role="button" tabindex="0" />
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header / navigasi -->
+    <header class="site-header sticky-top">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container flex-nowrap">
+                <a class="navbar-brand" href="/">
+                    <img src="@Site.Webp("modul/56logo epicescapes.png")" class="logo" alt="@Site.BrandName" />
+                </a>
+
+                <button class="navbar-toggler hamburger" type="button" data-bs-toggle="offcanvas" data-bs-target="#mainNav"
+                        aria-controls="mainNav" aria-label="Open menu">
+                    <span></span><span></span><span></span>
+                </button>
+
+                <div class="offcanvas offcanvas-start offcanvas-nav" tabindex="-1" id="mainNav" aria-labelledby="mainNavLabel">
+                    <div class="offcanvas-header d-lg-none">
+                        <a href="/" id="mainNavLabel"><img src="@Site.Webp("modul/56logo epicescapes.png")" class="logo" alt="@Site.BrandName" /></a>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body align-items-lg-center">
+                        <form class="header-search ms-lg-auto me-lg-3" method="get" action="/search" role="search">
+                            <input type="search" name="keyword" placeholder="Find your perfect tour..." aria-label="Search tours" value="@Context.Request.Query["keyword"]" required />
+                            <button type="submit" class="btn-search">Search Here <i class="uil uil-search"></i></button>
+                        </form>
+                        <ul class="navbar-nav">
+                            <li class="nav-item"><a class="nav-link @Active("/")" href="/">Home</a></li>
+                            <li class="nav-item"><a class="nav-link @Active("/about-us")" href="/about-us">About Us</a></li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle @Active("/our-tours")" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Our Services</a>
+                                <ul class="dropdown-menu">
+                                    @foreach (var c in Repo.Categories)
+                                    {
+                                        <li><a class="dropdown-item" href="/our-tours/category/@c.Slug">@c.Name</a></li>
+                                    }
+                                </ul>
+                            </li>
+                            <li class="nav-item"><a class="nav-link @Active("/destinations")" href="/destinations">Tour Destinations</a></li>
+                            <li class="nav-item"><a class="nav-link @Active("/contact")" href="/contact">Contact</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link wishlist-link @Active("/wishlist")" href="/wishlist" title="Wishlist">
+                                    <i class="uil uil-heart"></i><span class="d-lg-none ms-2">Wishlist</span>
+                                    <span class="wishlist-count" data-wishlist-count hidden>0</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="d-lg-none mt-auto pt-4 offcanvas-contact">
+                            <p class="fw-bold mb-2">Contact us</p>
+                            <p class="mb-1 notranslate"><a href="@Site.WhatsAppUrl()" target="_blank" rel="noopener">@Site.PhoneDisplay (WhatsApp)</a></p>
+                            <p class="mb-1 notranslate">@Site.Email</p>
+                            <p class="mb-3">@Site.Address</p>
+                            <p class="fw-bold mb-2">Follow our social media</p>
+                            <div class="d-flex gap-3 fs-4">
+                                <a href="@Site.Facebook" target="_blank" rel="noopener" aria-label="Facebook"><i class="uil uil-facebook-f"></i></a>
+                                <a href="@Site.Instagram" target="_blank" rel="noopener" aria-label="Instagram"><i class="uil uil-instagram"></i></a>
+                                <a href="@Site.TikTok" target="_blank" rel="noopener" aria-label="TikTok"><i class="fa-brands fa-tiktok fs-5"></i></a>
+                                <a href="@Site.YouTube" target="_blank" rel="noopener" aria-label="YouTube"><i class="uil uil-youtube"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <!-- Footer biru -->
+    <footer class="site-footer">
+        <div class="footer-bg" aria-hidden="true">
+            <span class="blob blob-1"></span><span class="blob blob-2"></span><span class="grid"></span>
+        </div>
+        <div class="container position-relative">
+            <div class="row gy-5 gy-lg-0">
+                <div class="col-lg-3">
+                    <a href="/"><img src="@Site.Webp("modul/28logo epicescapes.png")" class="logo-footer" alt="@Site.BrandName" /></a>
+                    <p class="mt-4 mb-4">Epic Escapes Indonesia provides curated tours across Java, including Blue Fire Ijen, Borobudur, and Yogyakarta’s top destinations. Trusted, professional, and dedicated to delivering unforgettable travel experiences.</p>
+                    <ul class="social-circle">
+                        <li><a href="@Site.Facebook" target="_blank" rel="noopener" aria-label="Facebook"><i class="uil uil-facebook-f"></i></a></li>
+                        <li><a href="@Site.TikTok" target="_blank" rel="noopener" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a></li>
+                        <li><a href="@Site.Instagram" target="_blank" rel="noopener" aria-label="Instagram"><i class="uil uil-instagram"></i></a></li>
+                        <li><a href="@Site.YouTube" target="_blank" rel="noopener" aria-label="YouTube"><i class="uil uil-youtube"></i></a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 offset-lg-1">
+                    <p class="footer-title">Contact Us</p>
+                    <ul class="footer-contact">
+                        <li><i class="uil uil-map-marker"></i><a href="@Site.MapUrl" target="_blank" rel="noopener" class="notranslate">@Site.Address</a></li>
+                        <li><i class="uil uil-whatsapp"></i><a href="@Site.WhatsAppUrl()" target="_blank" rel="noopener" class="notranslate">@Site.PhoneDisplay</a></li>
+                        <li><i class="uil uil-phone-alt"></i><a href="@Site.PhoneUrl" class="notranslate">@Site.PhoneDisplay</a></li>
+                        <li><i class="uil uil-envelope"></i><a href="mailto:@Site.Email" class="notranslate">@Site.Email</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <p class="footer-title">Destinations</p>
+                    <ul class="footer-links">
+                        @foreach (var d in Repo.Destinations)
+                        {
+                            <li><a href="/destinations/@d.Slug">@d.Name</a></li>
+                        }
+                    </ul>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <p class="footer-title">Our Partner</p>
+                    <div class="partner-wrap">
+                        @foreach (var p in Repo.Partners)
+                        {
+                            if (p.Url is null)
+                            {
+                                <span><img src="@Site.Webp(p.Image)" alt="@p.Name" title="@p.Name" loading="lazy" /></span>
+                            }
+                            else
+                            {
+                                <a href="@p.Url" target="_blank" rel="noopener"><img src="@Site.Webp(p.Image)" alt="@p.Name" title="@p.Name" loading="lazy" /></a>
+                            }
+                        }
+                    </div>
+                    <p class="footer-title mt-4 mb-3">Language</p>
+                    <div class="flag-wrap d-flex flex-wrap gap-2 align-items-center notranslate">
+                        @foreach (var l in langs)
+                        {
+                            <img src="/lib/flags/@(l.Flag).svg" class="flag-icon" alt="@l.Name" title="@l.Name" data-lang="@l.Code" role="button" tabindex="0" />
+                        }
+                    </div>
+                </div>
+            </div>
+            <hr class="footer-hr" />
+            <p class="footer-bottom">Copyright &copy; @DateTime.Now.Year @Site.BrandName. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Tombol WhatsApp melayang (kiri bawah, berdenyut) -->
+    <div class="contact-btn">
+        <a href="@Site.WhatsAppUrl()" target="_blank" rel="noopener" class="btn-whatsapp-pulse" aria-label="Whatsapp">
+            <i class="uil uil-whatsapp rise-shake"></i>
+        </a>
+    </div>
+
+    <!-- Tombol kembali ke atas (kanan bawah, lingkaran progres scroll) -->
+    <div class="progress-wrap" role="button" aria-label="Back to top" tabindex="0">
+        <svg class="progress-circle" width="100%" height="100%" viewBox="-1 -1 102 102">
+            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
+        </svg>
+        <i class="uil uil-arrow-up"></i>
+    </div>
+
+    <div id="google_translate_element" class="d-none"></div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/swiper/swiper-bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
