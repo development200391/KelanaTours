@@ -158,10 +158,30 @@ window.googleTranslateElementInit = function () {
 };
 
 (function () {
+    // Google Translate menyimpan pilihan bahasa di cookie "googtrans", kadang di domain induk
+    // (mis. .runasp.net atau .epicescapes.id). Supaya kembali ke English benar-benar berhasil,
+    // cookie dihapus di semua variasi domain: host saja, epicescapes.runasp.net, .runasp.net, dst.
+    function cookieDomains() {
+        const parts = location.hostname.split(".");
+        const list = [""];
+        for (let i = 0; i < parts.length - 1; i++) {
+            const d = parts.slice(i).join(".");
+            list.push(d, "." + d);
+        }
+        return list;
+    }
+
+    function clearCookie() {
+        cookieDomains().forEach(d => {
+            document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/" + (d ? "; domain=" + d : "");
+        });
+    }
+
     function setCookie(value) {
-        const expires = value ? "" : "; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-        document.cookie = `googtrans=${value}${expires}; path=/`;
-        document.cookie = `googtrans=${value}${expires}; path=/; domain=${location.hostname}`;
+        clearCookie();
+        if (!value) return;
+        document.cookie = `googtrans=${value}; path=/`;
+        document.cookie = `googtrans=${value}; path=/; domain=${location.hostname}`;
     }
 
     function currentLang() {

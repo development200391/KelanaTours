@@ -55,7 +55,7 @@ img { max-width: 100%; }
 .btn-whatsapp:hover, .btn-whatsapp:focus { background: #1ebe5a; color: #fff; }
 
 /* ---------- Top bar ---------- */
-.topbar { background: var(--primary); color: #fff; font-size: 12px; font-weight: 500; padding: .5rem 0; position: relative; z-index: 1031; }
+.topbar { background: var(--primary); color: #fff; font-size: 12px; font-weight: 500; padding: .5rem 0; }
 .topbar i { font-size: 14px; }
 .topbar-link { color: #fff; display: inline-flex; align-items: center; white-space: nowrap; }
 .topbar-link:hover { color: rgba(255, 255, 255, .8); }
